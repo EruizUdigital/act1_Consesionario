@@ -4,6 +4,7 @@ public class Concesionario {
     public static void main(String[] args) {
         System.out.println("\n=== BIENVENIDO A CONCESIONARIO LOS MIAU ===\n");
 
+        int contador=1;
         List<Vehiculos> vehiculos = new ArrayList<>();
         List<Venta> ventas = new ArrayList<>();
         Set<Integer> vendidos = new HashSet<>();
@@ -13,18 +14,24 @@ public class Concesionario {
         String[] marcasAutos = {"Toyota", "Mazda", "Renault", "Chevrolet", "Nissan", "Hyundai", "Kia", "Volkswagen", "BMW", "Ferrari"};
         String[] marcasCamionetas = {"Ford", "Chevrolet", "Toyota", "Nissan", "Hyundai", "Isuzu", "Mazda", "Volkswagen", "RAM", "Mitsubishi"};
         String[] marcasMotos = {"Honda", "Yamaha", "Suzuki", "Kawasaki", "AKT", "Bajaj", "TVS", "Hero", "Benelli", "Ducati"};
+        double[] preciosAutos = {150000000, 140000000, 130000000, 135000000, 125000000, 120000000, 110000000, 115000000, 200000000, 450000000};
+        double[] preciosCamionetas = {180000000, 170000000, 175000000, 160000000, 155000000, 145000000, 165000000, 158000000, 210000000, 150000000};
+        double[] preciosMotos = {8000000, 9000000, 8500000, 9500000, 5500000, 6000000, 5000000, 4800000, 7000000, 20000000};
 
         // Autos
         for (int i = 1; i <= 10; i++) {
-            vehiculos.add(new Auto(i, marcasAutos[i - 1], rand.nextInt(8) + 2015, rand.nextInt(80000) + 5000));
+            vehiculos.add(new Auto(contador, marcasAutos[i - 1], rand.nextInt(8) + 2015, rand.nextInt(80000) + 5000,preciosAutos[i-1]));
+            contador++;
         }
         // Camionetas
-        for (int i = 11; i <= 20; i++) {
-            vehiculos.add(new Camioneta(i, marcasCamionetas[i - 11], rand.nextInt(8) + 2014, rand.nextInt(100000) + 15000));
+        for (int i = 1; i <= 10; i++) {
+            vehiculos.add(new Camioneta(i, marcasCamionetas[i - 1], rand.nextInt(8) + 2014, rand.nextInt(100000) + 15000,preciosCamionetas[i-1]));
+            contador++;
         }
         // Motocicletas
-        for (int i = 21; i <= 30; i++) {
-            vehiculos.add(new Motocicleta(i, marcasMotos[i - 21], rand.nextInt(5) + 2018, rand.nextInt(30000) + 1000));
+        for (int i = 1; i <= 10; i++) {
+            vehiculos.add(new Motocicleta(i, marcasMotos[i - 1], rand.nextInt(5) + 2018, rand.nextInt(30000) + 1000,preciosMotos[i-1]));
+            contador++;
         }
 
         registrarVentasIniciales(ventas, vendidos);
@@ -127,6 +134,7 @@ public class Concesionario {
 
         System.out.print("Precio: ");
         double precio = scanner.nextDouble();
+        System.out.println(precio);
         scanner.nextLine();
 
         // Verificar si es una marca nueva
@@ -134,11 +142,18 @@ public class Concesionario {
                 .anyMatch(v -> v.getMarca().equalsIgnoreCase(marca));
 
         if (!marcaExiste) {
-            System.out.println("✅ Marca nueva registrada: " + marca);
+            System.out.println("Marca nueva registrada: " + marca);
         }
 
-        Vehiculos nuevo = new Vehiculos(codigo, marca, tipo, modelo, kilometraje);
-        nuevo.setPrecio(precio);
+        Vehiculos nuevo = null;
+
+        switch (tipoVehiculo) {
+            case 1-> nuevo = new Auto(codigo, marca, modelo, kilometraje,precio);
+            case 2-> nuevo = new Camioneta(codigo, marca, modelo, kilometraje,precio);
+            case 3 -> nuevo = new Motocicleta(codigo, marca, modelo, kilometraje,precio);
+
+        }
+
         vehiculos.add(nuevo);
 
         System.out.println("Vehículo agregado exitosamente.");
@@ -189,7 +204,7 @@ public class Concesionario {
     }
 
     private static double calcularPrecio(Vehiculos v) {
-        return 20000 - (v.getModelo() - 2015) * 500 - v.getKilometraje() * 0.05;
+        return v.getPrecio() - (v.getModelo() - 2015) * 500 - v.getKilometraje() * 0.05;
     }
 
     private static void filtrarYComprar(Scanner scanner, List<Vehiculos> vehiculos, List<Venta> ventas, Set<Integer> vendidos) {
